@@ -1,5 +1,8 @@
+from tkinter.ttk import Progressbar
+
 from PIL import Image
-from tkinter import filedialog, Tk, Label, Button, messagebox, ttk
+from tkinter import filedialog, Tk, Label, Button, messagebox, StringVar, Entry
+from ttkthemes import ThemedStyle
 import os
 
 
@@ -38,45 +41,42 @@ def convert_images_to_webp(input_folder, output_folder, progress_bar):
 
 
 # Folder Selection
-def select_input_folder():
+def select_folder():
     folder_selected = filedialog.askdirectory()
-    input_folder_label.config(text="Input Folder: " + folder_selected)
-    convert_button.config(state="normal")
-    convert_button['command'] = lambda: convert_images(input_folder=folder_selected)
+    if folder_selected:
+        input_folder_var.set(folder_selected)
 
 
 # Image Conversion on UI
-def convert_images(input_folder):
-    output_folder = os.path.join(os.path.expanduser('~'), 'Documents', 'converted-images')
-    try:
-        progress_bar = ttk.Progressbar(root, orient="horizontal", length=350, mode="determinate")
-        progress_bar.pack(pady=5)
+def convert_images():
+    input_folder = input_folder_var.get()
+    output_folder = os.path.join(os.path.expanduser("~"), "Documents", "converted-images")
 
-        convert_images_to_webp(input_folder, output_folder, progress_bar)
-        output_folder_label.config(text="Output Folder: " + output_folder)
-    except Exception as e:
-        messagebox.showerror("Error", f"An error occurred: {str(e)}")
+    progress_bar = Progressbar(root, mode="determinate", length=300)
+    progress_bar.grid(row=5, column=0, columnspan=4, pady=(10, 20))
+
+    convert_images_to_webp(input_folder, output_folder, progress_bar)
 
 
 # UI Initialization
 root = Tk()
+
+style = ThemedStyle(root)
+style.set_theme("equilux")
+
 screen_width = root.winfo_screenwidth()
 screen_height = root.winfo_screenheight()
-center_window_x = (screen_width - 500) // 2
+center_window_x = (screen_width - 400) // 2
 center_window_y = (screen_height - 180) // 2
-root.geometry(f"500x180+{center_window_x}+{center_window_y}")
-root.title("Image Converter")
+root.geometry(f"400x180+{center_window_x}+{center_window_y}")
+root.title("WEBP Image Converter")
 
-input_folder_label = Label(root, text="Input Folder: ")
-input_folder_label.pack()
+input_folder_var = StringVar()
+Label(root, text="Image Converter", font=("Aptos", 12)).grid(row=0, column=0, columnspan=3, pady=(10, 5))
+Label(root, text="Input Folder:").grid(row=1, column=0, padx=5, pady=5, sticky="e")
+Entry(root, textvariable=input_folder_var, width=30).grid(row=1, column=1, pady=5)
+Button(root, text="Select Folder", command=select_folder).grid(row=1, column=2, padx=5, pady=5)
+Button(root, text="Convert", command=convert_images).grid(row=2, column=0, columnspan=3, pady=10)
 
-select_folder_button = Button(root, text="Select Input Folder", command=select_input_folder)
-select_folder_button.pack()
-
-convert_button = Button(root, text="Convert Images", state="disabled")
-convert_button.pack()
-
-output_folder_label = Label(root, text="Output Folder: ")
-output_folder_label.pack()
 
 root.mainloop()
