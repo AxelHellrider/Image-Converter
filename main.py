@@ -1,7 +1,5 @@
-from tkinter.ttk import Progressbar
-
 from PIL import Image
-from tkinter import filedialog, Tk, Label, Button, messagebox, StringVar, Entry
+from tkinter import filedialog, Tk, Label, Button, messagebox, StringVar, Entry, Progressbar
 from ttkthemes import ThemedStyle
 import os
 
